@@ -6,13 +6,13 @@
 
 把下面这句话连同链接复制给 Codex：
 
-> 请安装这个 Skill：https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/main/skills/xhs-live-chat-sender
+> 请安装这个 Skill：https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/v1.0.0/skills/xhs-live-chat-sender
 
 也可以使用 Codex 自带的 skill installer：
 
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
-  --url https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/main/skills/xhs-live-chat-sender
+  --url https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/v1.0.0/skills/xhs-live-chat-sender
 ```
 
 安装后，在下一轮对话中说：
