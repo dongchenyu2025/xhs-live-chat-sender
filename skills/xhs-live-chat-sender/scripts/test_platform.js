@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const assert = require("assert");
+const path = require("path");
 const config = require("./xhs_config.example.json");
 const { chromeCandidates, defaultProfileDir, expandHome } = require("./platform");
 
@@ -16,8 +17,9 @@ assert.strictEqual(windows[0], "C:\\Users\\Test\\AppData\\Local\\Google\\Chrome\
 assert.strictEqual(windows[1], "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
 assert.strictEqual(windows[2], "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
 
-assert.strictEqual(expandHome("~/profile", "/Users/test"), "/Users/test/profile");
-assert.strictEqual(defaultProfileDir("/Users/test"), "/Users/test/.xhs-live-chat-sender/chrome-profile");
+const nativeHome = process.platform === "win32" ? "C:\\Users\\test" : "/Users/test";
+assert.strictEqual(expandHome("~/profile", nativeHome), path.join(nativeHome, "profile"));
+assert.strictEqual(defaultProfileDir(nativeHome), path.join(nativeHome, ".xhs-live-chat-sender", "chrome-profile"));
 
 assert.deepStrictEqual(config.messages, [
   "学习主题包含：日常生活、城市旅行、观点表达、美食探店、个人成长、演讲访谈等",
