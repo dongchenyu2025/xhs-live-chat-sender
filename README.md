@@ -6,20 +6,28 @@
 
 把下面这句话连同链接复制给 Codex：
 
-> 请安装这个 Skill：https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/v1.0.1/skills/xhs-live-chat-sender
+> 请一键安装并启动这个 Skill：https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/v1.0.2/skills/xhs-live-chat-sender 。安装到 WorkBuddy 后不要进行配置问答，直接读取 `references/runtime-setup.md` 并执行当前系统对应的一键脚本，使用默认三句话术和5分钟间隔。仅在系统要求管理员授权或独立 Chrome 需要扫码登录时提示我操作。
 
 也可以使用 Codex 自带的 skill installer：
 
 ```bash
 python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py \
-  --url https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/v1.0.1/skills/xhs-live-chat-sender
+  --url https://github.com/dongchenyu2025/xhs-live-chat-sender/tree/v1.0.2/skills/xhs-live-chat-sender
 ```
 
-安装后，在下一轮对话中说：
+仅安装文件后，可直接运行对应的一键脚本：
 
-> 帮我配置小红书直播循环话术
+```bash
+# macOS
+bash scripts/setup-macos.sh
+```
 
-安装完成后，Skill 会先展示三句默认话术和 5 分钟间隔。需要修改时，直接把新话术和间隔发给 agent，它会自动写入配置；不需要手动编辑 JSON。真正启动循环前仍会请求一次明确确认。
+```powershell
+# Windows PowerShell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\setup-windows.ps1
+```
+
+脚本会自动检测或安装 Node.js、安装依赖、生成默认配置、启动独立 Chrome，并在登录千帆后自动识别主播账号。无需与 AI 逐项确认配置。
 
 默认话术：
 
@@ -31,7 +39,7 @@ python3 ~/.codex/skills/.system/skill-installer/scripts/install-skill-from-githu
 
 - macOS 或 Windows 10/11
 - Google Chrome
-- Node.js 18+
+- Node.js 18+（缺失或版本过低时由一键脚本自动安装）
 - 可登录的小红书千帆主播账号
 
 仓库 CI 会分别在 macOS 与 Windows runner 上执行依赖安装、平台路径测试和脚本语法检查。
@@ -55,6 +63,8 @@ skills/xhs-live-chat-sender/
     ├── check_config.js
     ├── package.json
     ├── platform.js
+    ├── setup-macos.sh
+    ├── setup-windows.ps1
     ├── test_platform.js
     ├── xhs_config.example.json
     ├── xhs_daemon.js

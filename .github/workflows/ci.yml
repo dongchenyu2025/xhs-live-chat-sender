@@ -30,3 +30,7 @@ jobs:
       - run: node --check xhs_daemon.js
       - run: node --check check_config.js
       - run: node --check platform.js
+      - if: runner.os == 'macOS'
+        run: SETUP_VALIDATE_ONLY=1 bash setup-macos.sh
+      - if: runner.os == 'Windows'
+        run: .\setup-windows.ps1 -ValidateOnly

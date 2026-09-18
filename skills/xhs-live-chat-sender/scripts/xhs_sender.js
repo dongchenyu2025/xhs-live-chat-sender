@@ -62,7 +62,8 @@ function normalizeConfig(raw) {
   const messages = raw.messages.map((m) => String(m).trim()).filter((m) => m.length > 0);
   if (!messages.length) return null;
   const accountName = String(raw.accountName || "").trim();
-  if (!accountName || accountName === "你的店铺或主播名") return null;
+  const autoDetectAccount = raw.autoDetectAccount === true;
+  if ((!accountName || accountName === "你的店铺或主播名") && !autoDetectAccount) return null;
   const targetUrlKeyword = String(raw.targetUrlKeyword || "ark.xiaohongshu.com/live_center_control");
   if (targetUrlKeyword !== "ark.xiaohongshu.com/live_center_control") return null;
   const maxChars = Number(raw.maxMessageChars) || 40;
@@ -76,6 +77,7 @@ function normalizeConfig(raw) {
     : [2000, 5000];
   return {
     accountName,
+    autoDetectAccount,
     targetUrlKeyword,
     cdpUrl: String(raw.cdpUrl || "http://127.0.0.1:9222"),
     chromeBinary: resolveChromeBinary(raw.chromeBinary),
@@ -122,7 +124,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // ---------- 审计 ----------
 const CRITICAL_EVENTS = new Set([
   "CDP_CONNECT_FAILED", "TARGET_TAB_UNAVAILABLE", "ACCOUNT_MISMATCH",
-  "INPUT_MISSING", "SEND_FAILED", "SLOT_DEADLINE_ABORT",
+  "ACCOUNT_DETECTION_FAILED", "INPUT_MISSING", "SEND_FAILED", "SLOT_DEADLINE_ABORT",
 ]);
 let consecutiveBadSlots = 0;
 function auditGroup(slot, cfg, results, immediate, elapsedMs) {
@@ -204,14 +206,33 @@ async function precheck(page, cfg) {
   return page.evaluate((account) => {
     const body = document.body.innerText || "";
     const input = document.querySelector('textarea[placeholder*="发送消息"]');
+    const shopLine = body.split("\n").map((line) => line.trim()).find(
+      (line) => line.length > 2 && line.length <= 42 && line.endsWith("的店")
+    );
+    const detectedAccount = shopLine ? shopLine.slice(0, -2).trim() : "";
     return {
-      accountOk: !account || body.includes(account),
+      accountOk: account ? body.includes(account) : !!detectedAccount,
+      detectedAccount,
       live: body.includes("已开播") || body.includes("直播中"),
       hasInput: !!input,
       inputLen: input ? input.value.length : -1,
       bodyHead: body.slice(0, 200),
     };
   }, cfg.accountName);
+}
+
+function persistDetectedAccount(accountName) {
+  try {
+    const raw = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf8"));
+    raw.accountName = accountName;
+    raw.autoDetectAccount = false;
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(raw, null, 2) + "\n");
+    log("info", "ACCOUNT_AUTO_DETECTED", { accountName });
+    return true;
+  } catch (error) {
+    alert("ACCOUNT_DETECTION_SAVE_FAILED", { err: String(error.message || error) });
+    return false;
+  }
 }
 
 // ---------- 发送 ----------
@@ -298,6 +319,12 @@ async function runGroup(slotLabel, isImmediate) {
     if (!page) { noteEvent(slotLabel, "TARGET_TAB_UNAVAILABLE", {}); return; }
     await page.bringToFront().catch(() => {});
     const pc = await precheck(page, cfg);
+    if (!cfg.accountName && cfg.autoDetectAccount) {
+      if (!pc.detectedAccount) { noteEvent(slotLabel, "ACCOUNT_DETECTION_FAILED", {}); return; }
+      cfg.accountName = pc.detectedAccount;
+      cfg.autoDetectAccount = false;
+      if (!persistDetectedAccount(cfg.accountName)) return;
+    }
     if (!pc.accountOk) { noteEvent(slotLabel, "ACCOUNT_MISMATCH", {}); return; }
     if (!pc.live) { noteEvent(slotLabel, "NOT_LIVE_KEEP_CHECKING", { bodyHead: pc.bodyHead }); return; }
     if (!pc.hasInput) { noteEvent(slotLabel, "INPUT_MISSING", {}); return; }

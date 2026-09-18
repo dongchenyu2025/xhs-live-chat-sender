@@ -8,7 +8,7 @@ try { cfg = JSON.parse(fs.readFileSync(file, "utf8")); }
 catch (error) { console.error(`invalid JSON: ${error.message}`); process.exit(1); }
 
 const errors = [];
-if (!String(cfg.accountName || "").trim() || cfg.accountName === "你的店铺或主播名") errors.push("accountName must be set");
+if ((!String(cfg.accountName || "").trim() || cfg.accountName === "你的店铺或主播名") && cfg.autoDetectAccount !== true) errors.push("accountName must be set unless autoDetectAccount is true");
 if (!Array.isArray(cfg.messages) || cfg.messages.length === 0) errors.push("messages must be a non-empty array");
 else cfg.messages.forEach((message, index) => {
   const text = String(message || "").trim();

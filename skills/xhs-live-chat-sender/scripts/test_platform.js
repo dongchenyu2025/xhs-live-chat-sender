@@ -26,6 +26,8 @@ assert.deepStrictEqual(config.messages, [
   "内容已更新250期，每周新增5期，永久有效",
   "点击购物车可以进行全英Vlog精读，支持单句循环、跟读练习、句式解析、字幕下载",
 ]);
+assert.strictEqual(config.accountName, "");
+assert.strictEqual(config.autoDetectAccount, true);
 assert(config.messages.every((message) => message.length <= config.maxMessageChars));
 
 console.log(JSON.stringify({ ok: true, platforms: ["darwin", "win32"], defaultMessages: config.messages.length }));

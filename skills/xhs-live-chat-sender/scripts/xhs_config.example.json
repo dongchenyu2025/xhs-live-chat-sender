@@ -1,5 +1,6 @@
 {
-  "accountName": "你的店铺或主播名",
+  "accountName": "",
+  "autoDetectAccount": true,
   "targetUrlKeyword": "ark.xiaohongshu.com/live_center_control",
   "cdpUrl": "http://127.0.0.1:9222",
   "chromeBinary": "",
