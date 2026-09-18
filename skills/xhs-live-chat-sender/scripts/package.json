@@ -1,9 +1,12 @@
 {
   "name": "xhs-live-chat-sender-runtime",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Local runtime dependency for the xhs-live-chat-sender skill",
   "license": "MIT",
+  "scripts": {
+    "test": "node test_platform.js"
+  },
   "dependencies": {
     "playwright-core": "1.63.0"
   }

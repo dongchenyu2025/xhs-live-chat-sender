@@ -2,11 +2,12 @@
   "accountName": "你的店铺或主播名",
   "targetUrlKeyword": "ark.xiaohongshu.com/live_center_control",
   "cdpUrl": "http://127.0.0.1:9222",
-  "chromeBinary": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "chromeBinary": "",
   "chromeProfileDir": "~/.xhs-live-chat-sender/chrome-profile",
   "messages": [
-    "第一句话术，不超过40个字符",
-    "第二句话术，不超过40个字符"
+    "学习主题包含：日常生活、城市旅行、观点表达、美食探店、个人成长、演讲访谈等",
+    "内容已更新250期，每周新增5期，永久有效",
+    "点击购物车可以进行全英Vlog精读，支持单句循环、跟读练习、句式解析、字幕下载"
   ],
   "intervalMinutes": 5,
   "toleranceMinutes": null,

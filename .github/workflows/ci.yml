@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: skills/xhs-live-chat-sender/scripts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: skills/xhs-live-chat-sender/scripts/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: node --check xhs_sender.js
+      - run: node --check xhs_daemon.js
+      - run: node --check check_config.js
+      - run: node --check platform.js

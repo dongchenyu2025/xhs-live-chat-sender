@@ -10,12 +10,12 @@
  * - 配置热更新：修改 config JSON 后下一轮自动生效，无需重启
  *
  * 启动：node xhs_sender.js [--immediate]   （--immediate 立即发一组再进网格）
- * 停止：kill -TERM $(cat xhs_sender.pid)
+ * 管理：node xhs_daemon.js start|stop|status
  */
 const { chromium } = require("playwright-core");
 const fs = require("fs");
 const path = require("path");
-const os = require("os");
+const { defaultProfileDir, expandHome, resolveChromeBinary } = require("./platform");
 
 const DIR = __dirname;
 const CONFIG_FILE = path.join(DIR, "xhs_config.json");
@@ -78,8 +78,8 @@ function normalizeConfig(raw) {
     accountName,
     targetUrlKeyword,
     cdpUrl: String(raw.cdpUrl || "http://127.0.0.1:9222"),
-    chromeBinary: String(raw.chromeBinary || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
-    chromeProfileDir: String(raw.chromeProfileDir || path.join(os.homedir(), ".workbuddy/chrome-xhs")).replace(/^~/, os.homedir()),
+    chromeBinary: resolveChromeBinary(raw.chromeBinary),
+    chromeProfileDir: expandHome(raw.chromeProfileDir || defaultProfileDir()),
     messages,
     maxChars,
     intervalMinutes,
@@ -162,6 +162,10 @@ async function ensureChrome(cfg) {
     const r = await fetch(cfg.cdpUrl + "/json/version", { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
     if (r.ok) return true;
   } catch {}
+  if (!cfg.chromeBinary || !fs.existsSync(cfg.chromeBinary)) {
+    alert("CHROME_BINARY_NOT_FOUND", { configuredPath: cfg.chromeBinary, platform: process.platform });
+    return false;
+  }
   log("warn", "CDP_DOWN_RELAUNCH_CHROME");
   const { spawn } = require("child_process");
   const child = spawn(

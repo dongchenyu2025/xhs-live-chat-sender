@@ -21,7 +21,12 @@ function isAlive(pid) {
 function isManagedProcess(pid) {
   if (!isAlive(pid)) return false;
   try {
-    const command = execFileSync("/bin/ps", ["-p", String(pid), "-o", "command="], { encoding: "utf8" });
+    const command = process.platform === "win32"
+      ? execFileSync("powershell.exe", [
+          "-NoProfile", "-NonInteractive", "-Command",
+          `(Get-CimInstance Win32_Process -Filter \"ProcessId = ${pid}\").CommandLine`,
+        ], { encoding: "utf8", windowsHide: true })
+      : execFileSync("/bin/ps", ["-p", String(pid), "-o", "command="], { encoding: "utf8" });
     return command.includes("xhs_sender.js");
   } catch { return false; }
 }
