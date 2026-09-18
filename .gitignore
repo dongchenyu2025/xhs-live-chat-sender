@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+skills/xhs-live-chat-sender/scripts/xhs_config.json
+skills/xhs-live-chat-sender/scripts/*.log
+skills/xhs-live-chat-sender/scripts/*.pid
+skills/xhs-live-chat-sender/scripts/xhs_sender.state.json
+skills/xhs-live-chat-sender/scripts/xhs_chrome.pid

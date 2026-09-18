@@ -1,0 +1,15 @@
+{
+  "accountName": "你的店铺或主播名",
+  "targetUrlKeyword": "ark.xiaohongshu.com/live_center_control",
+  "cdpUrl": "http://127.0.0.1:9222",
+  "chromeBinary": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "chromeProfileDir": "~/.xhs-live-chat-sender/chrome-profile",
+  "messages": [
+    "第一句话术，不超过40个字符",
+    "第二句话术，不超过40个字符"
+  ],
+  "intervalMinutes": 5,
+  "toleranceMinutes": null,
+  "messageGapMs": [2000, 5000],
+  "maxMessageChars": 40
+}
